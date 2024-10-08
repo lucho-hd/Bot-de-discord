@@ -52,4 +52,4 @@ async def setup(bot):
     await bot.add_cog(MediaCommands(bot))
 
 # URL para invitar al bot
-    # https://discord.com/oauth2/authorize?client_id=CLIENT_ID&permissions=8&scope=bot
+    # https://discord.com/oauth2/authorize?client_id=1234534288779907072&permissions=8&scope=bot
