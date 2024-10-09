@@ -34,6 +34,7 @@ class CollectibleCommands(commands.Cog):
 
         card = random.choice(cards)
         user_collections[user_id].append(card)
+        # print(user_collections)
 
         embed = discord.Embed(description=f"¡Has recibido una nueva carta:\nRareza: {card['quality']}\n\n {card['name']}!\n\n{card['description'].replace('.', '\n')}")
         embed.set_image(url=card['image_url'])
@@ -49,16 +50,29 @@ class CollectibleCommands(commands.Cog):
             ctx (commands.Context): El contexto del comando invocado por el usuario.
         """
         user_id = str(ctx.author.id)
+
         if user_id not in user_collections or not user_collections[user_id]:
             await ctx.send("Aún no tienes ninguna carta en tu colección.")
             return
 
         collection_embed = discord.Embed(title="Tu colección de cartas")
 
+        print(f"Cartas del usuario {user_id}: {user_collections[user_id]}")
+
         for card in user_collections[user_id]:
-            collection_embed.add_field(name=card['name'], value=card['description '], inline=False)
-        
-        await ctx.send(embed=collection_embed)
+            name = card.get('name', 'Carta Desconocida')
+            description = card.get('description', 'Sin descripción')
+            image_url = card.get('image_url', 'https://via.placeholder.com/150')
+
+            card_embed = discord.Embed(
+                title=name,
+                description=description
+            )
+            card_embed.set_thumbnail(url=image_url)
+
+            print(f"Agregando carta al embed: {card['name']}, {card['description']}")
+
+            await ctx.send(embed=card_embed)
 
 async def setup(bot) -> None:
     """
