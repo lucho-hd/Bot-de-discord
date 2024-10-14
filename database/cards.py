@@ -16,7 +16,7 @@ cards = [
         "name": "Hello Nacho",
         "quality": "Rara",
         "image_url": "https://imgur.com/UxtQZMW.jpg",
-        "description": "Nacho es el vecino que todos prefieren evitar. Con una sonrisa inquietante y un sótano del que nadie habla, los rumores de niños desaparecidos crecen. Algo oscuro se esconde tras su puerta cerrada, pero quienes intentan averiguarlo, rara vez regresan. ¿Te atreves a descubrir el secreto?",
+        "description": "Nacho es el vecino que todos prefieren evitar. Con una sonrisa inquietante y un sótano del que nadie habla, los rumores de niños desaparecidos crecen. Algo oscuro se esconde tras su puerta cerrada, pero quienes intentan averiguarlo, nunca regresan. ¿Te atreves a descubrir el secreto?",
 
     }   
 ]   
