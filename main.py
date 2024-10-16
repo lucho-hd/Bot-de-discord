@@ -25,8 +25,10 @@ async def on_ready():
 async def setup_hook():
     await bot.load_extension('commands.commands')
     await bot.load_extension('commands.collectibles')
-
-
+    await bot.load_extension('tasks.message_tasks')
+    await bot.load_extension('tasks.reaction_tasks')
+    
+    
 async def main():
     """
         Inicializa al bot

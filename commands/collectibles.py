@@ -1,9 +1,11 @@
 # Imports
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import random
 from database.firebase_config import db
-from services.card import save_card_to_user, get_user_collection
+from services.card import get_all_cards, save_card_to_user, get_user_collection
+from utils.cards import get_quality_color
+from database.tasks import get_user_progress, save_user_progress
 
 class CollectibleCommands(commands.Cog):
     def __init__(self, bot) -> None:
@@ -25,29 +27,46 @@ class CollectibleCommands(commands.Cog):
             ctx (commands.Context): El contexto del comando invocado por el usuario.
         """
         user_id = str(ctx.author.id)
+    
+        # Obtiene el progreso del usuario en las distintas tareas
+        user_progress = get_user_progress(user_id)
 
-        user_cards = get_user_collection(user_id)
+        if user_progress['extra_rolls'] > 0:
+            user_progress['extra_rolls'] -= 1
+        else:
+            user_data = get_user_collection(user_id)
 
-        if len(user_cards) >= 3:
-            await ctx.send("Ya has tirado 3 veces en la última hora.")
-            return
+            if not user_data:
+                user_data = {'cards': []}
 
-        cards_ref = db.collection('cards').stream()
-        cards = [card.to_dict() for card in cards_ref]
+        # Obtiene todas las cartas desde Firebase
+        cards = get_all_cards()
 
         if not cards:
             await ctx.send("No hay cartas disponibles.")
             return
-            
+
+        # Elige una carta aleatoria de la lista de cartas
         card = random.choice(cards)
-        
+
+        # Añade la carta a la colección del usuario
         save_card_to_user(user_id, card)
 
+        # Envía la carta al usuario
         embed = discord.Embed(description=f"¡Has recibido una nueva carta: **{card['name']}**!\n\n"
                                         f"**Calidad:** {card['quality']}\n\n"
                                         f"{card['description'].replace('.', '\n')}")
         embed.set_image(url=card['image_url'])
         await ctx.send(embed=embed)
+
+        save_user_progress(user_id, user_progress['messages_sent'], user_progress['reactions_made'], user_progress['extra_rolls'])
+
+    @tirar.error
+    async def tirar_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            cooldown_time = round(error.retry_after / 60, 2)
+            await ctx.send(f"Ya has tirado 3 veces. Debes esperar { cooldown_time } minutos antes de volver a tirar.") 
+
 
     @commands.command(name="coleccion")
     async def collection(self, ctx):
@@ -64,16 +83,6 @@ class CollectibleCommands(commands.Cog):
         if not user_cards:
             await ctx.send("Aún no tienes ninguna carta en tu colección.")
             return
-
-        def get_quality_color(quality):
-            """Devuelve un color basado en la calidad de la carta"""  
-            colors = {
-                "Común": 0x808080,
-                "Rara": 0x0000FF,
-                "Épica": 0x800080,
-                "Legendaria": 0xFFD700
-            }
-            return colors.get(quality, 0xFFFFFF)
 
         for card in user_cards:
             embed_color = get_quality_color(card['quality'])
