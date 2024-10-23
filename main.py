@@ -27,6 +27,8 @@ async def setup_hook():
     await bot.load_extension('commands.collectibles')
     await bot.load_extension('tasks.message_tasks')
     await bot.load_extension('tasks.reaction_tasks')
+    await bot.load_extension('commands.tasks')
+    await bot.load_extension('tasks.neither_lops_or_it_caster_hours')
     
     
 async def main():

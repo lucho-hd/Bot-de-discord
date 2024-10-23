@@ -28,8 +28,8 @@ class ReactionTask(commands.Cog):
         # Verificar si ha reaccionado a 5 mensajes
         if user_progress['reactions_made'] == 5:
             await reaction.message.channel.send(f"{user.mention}, ¡has reaccionado a 5 mensajes y ganas una tirada extra!")
-            user_progress['reactions_made'] = 0  # Reiniciar conteo de reacciones
-            user_progress['extra_rolls'] += 1  # Aumentar tiradas extra
+            user_progress['reactions_made'] = 0 
+            user_progress['extra_rolls'] += 1 
 
         await self.update_user_progress(user_id, user_progress)
 
